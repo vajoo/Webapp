@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<script type="text/javascript">
+  setInterval(                             //Periodically 
+    function()
+    {
+      $.getJSON(                             //Get some values from the server
+          $SCRIPT_ROOT + '/get_values',      // At this URL
+          {},                                // With no extra parameters
+          function(data)                     // And when you get a response
+          {
+            $("#result").text(data.result);  // Write the results into the 
+            buildTable(data.result)                                 // #result element
+          });
+    },
+  1000);
+</script>
+<body>
+  <h1 class="display-1 text-center">Porsche Cayman S!!!</h1>
+  {% if weekday != 5 and weekday != 6 %}
+    <h2 class="display-2 text-center" style="color:red;">Wochenende - Börse geschlossen!</h2>
+  {% endif %}
+  <p>
+      <!--<span id="result">error</span>-->
+  </p>
+
+  <script>
+    //document.getElementById("result").innerHTML;
+  </script>
+  
+  <div class="table-responsive-sm">
+    <table id="table_id" class="table table-striped table-dark table-bordered table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col" class="table-active"><b>TI</b></th>
+          <th scope="col" class="table-active"><b>Symbol</b></th>
+          <th scope="col" class="table-active"><b>Tuple</b></th>
+          <th scope="col" class="table-active"><b>Performance</b></th>
+          <th scope="col" class="table-active"><b>Trades</b></th>
+          <th scope="col" class="table-active"><b>Action</b></th>
+        </tr>
+      </thead>
+      <tbody id="ticker-table">
+
+      </tbody>
+    </table>
+  </div>
+
+  <script type="text/javascript">
+
+    function change_table_color(){
+        $('#table_id #ticker-table td.y_n').each(function(){
+            if ($(this).text() == 'Sell') {
+                $(this).css('background-color','#f00');
+            }
+            if ($(this).text() == 'Buy') {
+              $(this).css('background-color','#0f0');
+            }
+        });
+    }
+    
+  </script>
+
+  <script>
+    function buildTable(data) {
+      var table = document.getElementById('ticker-table')
+      table.innerHTML = '';
+      for(var i = 0; i < data.length; i++) {
+        if (data[i].Signal == "Buy") {
+          var color = "green"
+        }
+        else if (data[i].Signal == "Sell") {
+          var color = "red"
+        }
+        else {
+          var color = "#43494e"
+        }
+        var row = ` <tr>
+                      <td bgcolor=${color} style="color: white;">${data[i].TI}</td>
+                      <td bgcolor=${color} style="color: white;">${data[i].Symbol}</td>
+                      <td bgcolor=${color} style="color: white;">${data[i].Parameter}</td>
+                      <td bgcolor=${color} style="color: white;">${data[i].Performance}</td>
+                      <td bgcolor=${color} style="color: white;">${data[i].Trades}</td>
+                      <td bgcolor=${color} style="color: white;">${data[i].Signal}</td>
+                    </tr>`
+        table.innerHTML += row
+      }
+    }
+  </script>
+</body>
+{% endblock %}
